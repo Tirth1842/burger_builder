@@ -28,7 +28,7 @@ class BurgerBuilder extends Component {
         const oldCount = this.state.ingredients[type];
         const updatedCount = oldCount + 1;
         const updatedIngredients = {
-            ...this.state.ingredients
+            ...this.state.ingredients  // object can not be copied directly, it has to be copied with spread operator.
         };
         updatedIngredients[type] = updatedCount;
         const priceAddition = INGREDIENT_PRICES[type];
@@ -37,12 +37,46 @@ class BurgerBuilder extends Component {
         this.setState({totalPrice: newPrice, ingredients: updatedIngredients})
 
     }
+
+    removeIngredientHandler = (type) => {
+        const oldCount = this.state.ingredients[type];
+        
+        if(oldCount <= 0){
+            return;
+        }
+        const updatedCount = oldCount - 1;
+        const updatedIngredients = {
+            ...this.state.ingredients  // object can not be copied directly, it has to be copied with spread operator.
+        };
+        updatedIngredients[type] = updatedCount;
+        const priceDrecrement = INGREDIENT_PRICES[type];
+        const oldPrice = this.state.totalPrice;
+        const newPrice = oldPrice - priceDrecrement;
+        this.setState({totalPrice: newPrice, ingredients: updatedIngredients})
+
+        
+    };
+
+
     render () {
+        const disableInfo = {
+            ...this.state.ingredients
+        };
+
+        for(let key in disableInfo)
+        {
+            disableInfo[key] = disableInfo[key] <= 0;
+             // returns true or false
+             // for eg: salad: true, cheese: false..
+        }
         return (
             <Aux>
                 <Burger ingredients={this.state.ingredients}/>
                 <BuildControls 
                     ingredientAdded={this.addIngredientHandler}
+                    ingredientRemove={this.removeIngredientHandler}
+                    disabled={disableInfo}
+                    price={this.state.totalPrice}
                 />
             </Aux>
         );
